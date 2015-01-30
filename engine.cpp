@@ -31,6 +31,7 @@ void Engine::start()
 void Engine::mainLoop()
 {
     bool quit = false;
+    m_frameCount = 0;
 
     sf::RectangleShape tStart( sf::Vector2f(TILE_SIZE, TILE_SIZE) );
     sf::RectangleShape tEnd( sf::Vector2f(TILE_SIZE, TILE_SIZE) );
@@ -91,6 +92,15 @@ void Engine::mainLoop()
         //update
         screen->display();
 
+        //update frame count
+        m_frameCount++;
+
+        if(m_FPS_Clock.getElapsedTime().asSeconds() >= 1)
+        {
+            std::cout << "FPS:" << m_frameCount << std::endl;
+            m_frameCount = 0;
+            m_FPS_Clock.restart();
+        }
     }
 }
 

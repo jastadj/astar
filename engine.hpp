@@ -26,6 +26,9 @@ private:
 
     void mainLoop();
 
+    sf::Clock m_FPS_Clock;
+    int m_frameCount;
+
 public:
     Engine();
 

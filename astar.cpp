@@ -271,6 +271,26 @@ std::vector<sf::Vector2f> AStar::findPath()
     //debug
     d_drawNodes(&m_OpenList, sf::Color::Blue);
     d_drawNodes(&m_ClosedList, sf::Color::Magenta);
+    std::vector<A_Node*> nodepath;
+    //create temporary nodes using pathlist
+    for(int i = 0; i < int(pathlist.size()); i++)
+    {
+        A_Node *tempnode = new A_Node;
+        tempnode->x = pathlist[i].x;
+        tempnode->y = pathlist[i].y;
+
+        nodepath.push_back(tempnode);
+
+
+    }
+    d_drawNodes(&nodepath, sf::Color::Cyan);
+    //delete temp nodes
+    for(int i = int(nodepath.size()-1); i >= 0; i--)
+    {
+        delete nodepath[i];
+    }
+    nodepath.clear();
+
 
     return pathlist;
 }
