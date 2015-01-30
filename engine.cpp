@@ -40,6 +40,7 @@ void Engine::mainLoop()
     tStart.setPosition( sf::Vector2f(m_StartPos.x*TILE_SIZE, m_StartPos.y*TILE_SIZE) );
     tEnd.setPosition( sf::Vector2f(m_EndPos.x*TILE_SIZE, m_EndPos.y*TILE_SIZE) );
 
+    int mousebrush = 0;
 
     while(!quit)
     {
@@ -47,11 +48,29 @@ void Engine::mainLoop()
 
         screen->clear();
 
+        //if mouse held down
+        if(sf::Mouse::isButtonPressed(sf::Mouse::Left))
+        {
+            sf::Vector2i gridclick = mouseToGrid();
+
+            m_Map[gridclick.y][gridclick.x] = mousebrush;
+        }
+
         while(screen->pollEvent(event))
         {
             if(event.type == sf::Event::KeyPressed)
             {
                 quit = true;
+            }
+            else if(event.type == sf::Event::MouseButtonPressed)
+            {
+                if(event.mouseButton.button == sf::Mouse::Left)
+                {
+                    sf::Vector2i gridclick = mouseToGrid();
+
+                    if(m_Map[gridclick.y][gridclick.x] == 1) mousebrush = 0;
+                    else mousebrush = 1;
+                }
             }
         }
 
@@ -99,4 +118,12 @@ void Engine::drawTile(int x, int y, sf::Color color)
     tile.setPosition( sf::Vector2f( x*TILE_SIZE+1, y*TILE_SIZE+1));
 
     screen->draw(tile);
+}
+
+sf::Vector2i Engine::mouseToGrid()
+{
+    //get mouse position
+    sf::Vector2i mousePos = sf::Mouse::getPosition(*screen);
+
+    return sf::Vector2i( mousePos.x/TILE_SIZE, mousePos.y/TILE_SIZE);
 }

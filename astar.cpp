@@ -32,22 +32,28 @@ void AStar::getFscore(A_Node *tnode)
     tnode->f = tnode->h + tnode->g;
 }
 
-bool AStar::validTile(int x, int y)
+int AStar::validTile(int x, int y)
 {
+    // return 0 if outside map bounds
+    //  return 0 if in closed list
+    // return 0 if unwalkable
+    // return 1 if in openllist
+    // return 2 if totally valid
+
     //in map bounds?
-    if(x < 0 || x >= int((*m_Map)[0].size()) || y < 0 || y >= int(m_Map->size()) ) return false;
+    if(x < 0 || x >= int((*m_Map)[0].size()) || y < 0 || y >= int(m_Map->size()) ) return 0;
 
     //walkable?
-    else if( (*m_Map)[y][x] == 1) return false;
+    else if( (*m_Map)[y][x] == 1) return 0;
 
     //in openlist?
-    else if( inList( &m_OpenList, x, y)) return false;
+    else if( inList( &m_OpenList, x, y)) return 1;
 
     //in closed list?
-    else if( inList( &m_ClosedList, x, y)) return false;
+    else if( inList( &m_ClosedList, x, y)) return 0;
 
 
-    return true;
+    return 2;
 }
 bool AStar::inList( std::vector<A_Node*> *tlist, int x, int y)
 {
@@ -76,6 +82,16 @@ void AStar::moveNodeToClosedList( A_Node *tnode)
     }
 }
 
+A_Node *AStar::getOpenNode(int x, int y)
+{
+    for(int i = 0; i < int(m_OpenList.size()); i++)
+    {
+        if(m_OpenList[i]->x == x && m_OpenList[i]->y == y) return m_OpenList[i];
+    }
+
+    return NULL;
+}
+
 A_Node *AStar::getLowestFscoreNode()
 {
     A_Node *fnode = NULL;
@@ -88,7 +104,7 @@ A_Node *AStar::getLowestFscoreNode()
     //walk through open list and find highest f score
     for(int i = 0; i < int(m_OpenList.size()); i++)
     {
-        if(fnode->f < m_OpenList[i]->f) fnode = m_OpenList[i];
+        if(fnode->f > m_OpenList[i]->f) fnode = m_OpenList[i];
     }
 
     return fnode;
@@ -98,14 +114,17 @@ std::vector<sf::Vector2f> AStar::findPath()
 {
     std::vector<sf::Vector2f> pathlist;
     A_Node *currentNode = NULL;
+    bool found = false;
 
     //create starting node
     A_Node *node = new A_Node;
     node->x = m_StartX;
     node->y = m_StartY;
+    node->parent = NULL;
     node->g = 0;
     getHeuristic(node);
     getFscore(node);
+
 
     //add starting node to open list
     m_OpenList.push_back(node);
@@ -152,7 +171,7 @@ std::vector<sf::Vector2f> AStar::findPath()
 
     //process openlist
     //for now, just use an iterative run
-    for(int i = 0; i < 15; i++)
+    while(!m_OpenList.empty() || !found)
     {
         //set current node as lowest F score node
         currentNode = getLowestFscoreNode();
@@ -162,33 +181,83 @@ std::vector<sf::Vector2f> AStar::findPath()
         //check valid adjacent tiles to add to open list
         for(int n = -1 + currentNode->y; n < 2 + currentNode->y; n++)
         {
+            //if path was found, break out
+            if(found) break;
+
             for(int p = -1 + currentNode->x; p < 2 + currentNode->x; p++)
             {
                 //dont check center node since it is current node position!
                 if(n == 0 && p == 0) continue;
 
-                //check if walkable tile
-                if( validTile(p, n) )
+                //check if current tile is target tile
+                if(p == m_EndX && n == m_EndY)
                 {
-                    //add it to open list
-                    A_Node *nnode = new A_Node;
-                    nnode->x = p;
-                    nnode->y = n;
-                    nnode->parent = currentNode;
-                    getHeuristic(nnode);
-                    //get g score
-                    if( (p == -1 || p == 1 ) && (n == -1 || p == 1))
+
+                    A_Node *lastnode = currentNode;
+
+                    //add up path x/y coords to list to send out
+                    //walk backwards up to starting tile
+                    while(lastnode->parent != NULL )
                     {
-                        nnode->g = currentNode->g + A_DIAGCOST;
+                        pathlist.push_back( sf::Vector2f(lastnode->x, lastnode->y));
+
+                        lastnode = lastnode->parent;
                     }
-                    else nnode->g = currentNode->g + A_ORTHOCOST;
+                    found = true;
+                    break;
 
-                    //calc f score
-                    getFscore(nnode);
+                }
+                //check surrounding tiles
+                else
+                {
+                    int valid = validTile(p,n);
 
-                    //add to open list
-                    m_OpenList.push_back(nnode);
+                    //check if walkable tile
+                    if( valid )
+                    {
 
+
+                        //add it to open list
+                        A_Node *nnode = new A_Node;
+                        nnode->x = p;
+                        nnode->y = n;
+                        nnode->parent = currentNode;
+                        getHeuristic(nnode);
+                        //get g score
+                        if( (p == -1 || p == 1 ) && (n == -1 || p == 1))
+                        {
+                            nnode->g = currentNode->g + A_DIAGCOST;
+                        }
+                        else nnode->g = currentNode->g + A_ORTHOCOST;
+
+                        //if tile already in open list, check to see who has
+                        //a better g score (lower = better)
+                        if(valid == 1)
+                        {
+                            A_Node *oldNode = getOpenNode(p, n);
+
+                            //if new path is better than old path (less is better)
+                            if(nnode->g < oldNode->g)
+                            {
+                                //set old nodes parent to this one's parent (better path)
+                                oldNode->parent = nnode->parent;
+                            }
+
+                            //delete new nnode
+                            delete nnode;
+                        }
+                        //otherwise add new node
+                        else
+                        {
+
+                            //calc f score
+                            getFscore(nnode);
+
+                            //add to open list
+                            m_OpenList.push_back(nnode);
+                        }
+
+                    }
                 }
 
             }
@@ -215,6 +284,8 @@ void AStar::d_drawNodes(std::vector<A_Node*> *nodelist, sf::Color color)
     //walk through each node
     for(int i = 0; i < int(nodelist->size()); i++)
     {
+        //std::cout << i << ": f="  << (*nodelist)[i]->f << " g=" << (*nodelist)[i]->g << " h=" << (*nodelist)[i]->h << std::endl;
+
         //have engine draw tile for each node
         eng->drawTile( (*nodelist)[i]->x, (*nodelist)[i]->y, color);
     }

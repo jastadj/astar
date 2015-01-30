@@ -7,8 +7,8 @@
 #include <vector>
 
 #define TILE_SIZE 16
-#define MAP_WIDTH 20
-#define MAP_HEIGHT 20
+#define MAP_WIDTH 40
+#define MAP_HEIGHT 40
 
 class Engine
 {
@@ -21,6 +21,8 @@ private:
 
     void drawTiles();
     void drawTile(int x, int y, sf::Color = sf::Color::Black);
+
+    sf::Vector2i mouseToGrid();
 
     void mainLoop();
 

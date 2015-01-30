@@ -43,9 +43,10 @@ private:
     void getHeuristic(A_Node *tnode);
     void getFscore(A_Node *tnode);
 
-    bool validTile(int x, int y);
+    int validTile(int x, int y);
     bool inList( std::vector<A_Node*> *tlist, int x, int y);
     void moveNodeToClosedList( A_Node *tnode);
+    A_Node *getOpenNode(int x, int y);
     A_Node *getLowestFscoreNode();
 
 
