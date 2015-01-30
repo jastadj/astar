@@ -3,10 +3,11 @@
 	<cstdlib>
 	"engine.hpp"
 
-1422392757 source:c:\codeblocks\projects\astar\engine.cpp
+1422578608 source:c:\codeblocks\projects\astar\engine.cpp
 	"engine.hpp"
+	"astar.hpp"
 
-1422393542 c:\codeblocks\projects\astar\engine.hpp
+1422578508 c:\codeblocks\projects\astar\engine.hpp
 	<SFML\Graphics.hpp>
 	<iostream>
 	<string>
@@ -365,11 +366,11 @@
 	<string>
 	<vector>
 
-1422393487 source:c:\codeblocks\projects\astar\astar.cpp
+1422580968 source:c:\codeblocks\projects\astar\astar.cpp
 	"astar.hpp"
 
-1422392856 c:\codeblocks\projects\astar\astar.hpp
+1422580946 c:\codeblocks\projects\astar\astar.hpp
 	<vector>
 	<cmath>
-	<SFML\Graphics.hpp>
+	"engine.hpp"
 

@@ -29,5 +29,7 @@ public:
 
     void start();
 
+    friend class AStar;
+
 };
 #endif // CLASS_ENGINE

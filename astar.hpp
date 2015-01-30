@@ -5,7 +5,7 @@
 #include <cmath>
 
 //for debug
-#include <SFML\Graphics.hpp>
+#include "engine.hpp"
 
 #define A_ORTHOCOST 10
 #define A_DIAGCOST 14
@@ -43,6 +43,10 @@ private:
     void getHeuristic(A_Node *tnode);
     void getFscore(A_Node *tnode);
 
+    bool validTile(int x, int y);
+    bool inList( std::vector<A_Node*> *tlist, int x, int y);
+    void moveNodeToClosedList( A_Node *tnode);
+    A_Node *getLowestFscoreNode();
 
 
 public:
@@ -53,7 +57,8 @@ public:
     std::vector<sf::Vector2f> findPath();
 
     //debug
-    sf::RenderWindow *screen;
+    Engine *eng;
+    void d_drawNodes(std::vector<A_Node*> *nodelist, sf::Color color);
 };
 
 #endif // CLASS_ASTAR

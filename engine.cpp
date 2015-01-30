@@ -58,13 +58,16 @@ void Engine::mainLoop()
         //draw
         drawTiles();
 
+        //pathfind
+        AStar astar(&m_Map, m_StartPos.x, m_StartPos.y, m_EndPos.x, m_EndPos.y );
+        astar.eng = this;
+        astar.findPath();
+
         //draw start/stop tiles
         screen->draw(tStart);
         screen->draw(tEnd);
 
-        //pathfind
-        AStar astar(&m_Map, m_StartPos.x, m_StartPos.y, m_EndPos.x, m_EndPos.y );
-        astar.findPath();
+
 
         //update
         screen->display();
