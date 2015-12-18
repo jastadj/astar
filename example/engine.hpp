@@ -22,7 +22,7 @@ private:
     void drawTiles();
     void drawTile(int x, int y, sf::Color = sf::Color::Black);
 
-    sf::Vector2i mouseToGrid();
+    sf::Vector2f mouseToGrid();
 
     void mainLoop();
 

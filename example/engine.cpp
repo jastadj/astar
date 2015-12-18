@@ -38,8 +38,8 @@ void Engine::mainLoop()
 
     tStart.setFillColor(sf::Color::Green);
     tEnd.setFillColor(sf::Color::Red);
-    tStart.setPosition( sf::Vector2f(m_StartPos.x*TILE_SIZE, m_StartPos.y*TILE_SIZE) );
-    tEnd.setPosition( sf::Vector2f(m_EndPos.x*TILE_SIZE, m_EndPos.y*TILE_SIZE) );
+
+    sf::Vector2f *posptr = NULL;
 
     int mousebrush = 0;
 
@@ -50,12 +50,25 @@ void Engine::mainLoop()
         screen->clear();
 
         //if mouse held down
-        if(sf::Mouse::isButtonPressed(sf::Mouse::Left))
+        if(sf::Mouse::isButtonPressed(sf::Mouse::Right))
         {
-            sf::Vector2i gridclick = mouseToGrid();
+            sf::Vector2f gridclick = mouseToGrid();
 
             m_Map[gridclick.y][gridclick.x] = mousebrush;
         }
+
+        if(sf::Mouse::isButtonPressed(sf::Mouse::Left))
+        {
+
+            //if dragging a start/end point
+            if(posptr != NULL)
+            {
+                sf::Vector2f gridclick = mouseToGrid();
+                *posptr = gridclick;
+            }
+        }
+        else if(posptr != NULL) posptr = NULL;
+
 
         while(screen->pollEvent(event))
         {
@@ -67,13 +80,33 @@ void Engine::mainLoop()
             {
                 if(event.mouseButton.button == sf::Mouse::Left)
                 {
-                    sf::Vector2i gridclick = mouseToGrid();
+                    sf::Vector2f gridclick = mouseToGrid();
+
+                    //check if clicked on start pos or end pos
+                    if(m_StartPos == gridclick)
+                    {
+                        posptr = &m_StartPos;
+                    }
+                    else if(m_EndPos == gridclick)
+                    {
+                        posptr = &m_EndPos;
+                    }
+                    else posptr = NULL;
+
+                }
+                else if(event.mouseButton.button == sf::Mouse::Right)
+                {
+                    sf::Vector2f gridclick = mouseToGrid();
 
                     if(m_Map[gridclick.y][gridclick.x] == 1) mousebrush = 0;
                     else mousebrush = 1;
                 }
             }
         }
+
+        //update
+        tStart.setPosition( sf::Vector2f(m_StartPos.x*TILE_SIZE, m_StartPos.y*TILE_SIZE) );
+        tEnd.setPosition( sf::Vector2f(m_EndPos.x*TILE_SIZE, m_EndPos.y*TILE_SIZE) );
 
         //draw
         drawTiles();
@@ -130,10 +163,10 @@ void Engine::drawTile(int x, int y, sf::Color color)
     screen->draw(tile);
 }
 
-sf::Vector2i Engine::mouseToGrid()
+sf::Vector2f Engine::mouseToGrid()
 {
     //get mouse position
     sf::Vector2i mousePos = sf::Mouse::getPosition(*screen);
 
-    return sf::Vector2i( mousePos.x/TILE_SIZE, mousePos.y/TILE_SIZE);
+    return sf::Vector2f( mousePos.x/TILE_SIZE, mousePos.y/TILE_SIZE);
 }

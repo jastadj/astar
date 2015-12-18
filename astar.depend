@@ -374,3 +374,25 @@
 	<cmath>
 	"engine.hpp"
 
+1450473055 source:c:\codeblocks\projects\astar\example\engine.cpp
+	"engine.hpp"
+	"astar.hpp"
+
+1450473055 c:\codeblocks\projects\astar\example\engine.hpp
+	<SFML\Graphics.hpp>
+	<iostream>
+	<string>
+	<vector>
+
+1450473055 c:\codeblocks\projects\astar\include\astar.hpp
+	<vector>
+	<cmath>
+	"engine.hpp"
+
+1450473055 source:c:\codeblocks\projects\astar\example\main.cpp
+	<cstdlib>
+	"engine.hpp"
+
+1450473055 source:c:\codeblocks\projects\astar\src\astar.cpp
+	"astar.hpp"
+

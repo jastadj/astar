@@ -31,6 +31,8 @@
 		<Compiler>
 			<Add option="-Wall" />
 			<Add directory="../../SFML-2.2/include" />
+			<Add directory="include" />
+			<Add directory="example" />
 		</Compiler>
 		<Linker>
 			<Add library="sfml-graphics" />
@@ -38,11 +40,11 @@
 			<Add library="sfml-system" />
 			<Add directory="../../SFML-2.2/lib" />
 		</Linker>
-		<Unit filename="astar.cpp" />
-		<Unit filename="astar.hpp" />
-		<Unit filename="engine.cpp" />
-		<Unit filename="engine.hpp" />
-		<Unit filename="main.cpp" />
+		<Unit filename="example/engine.cpp" />
+		<Unit filename="example/engine.hpp" />
+		<Unit filename="example/main.cpp" />
+		<Unit filename="include/astar.hpp" />
+		<Unit filename="src/astar.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />
